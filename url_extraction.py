@@ -1,12 +1,12 @@
 from urllib.request import urlopen
 from html.parser import HTMLParser
+import csv
 
-html = urlopen("http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1")
-the_page = str(html.read())
 url_list = []
 
 class URLHTMLParser(HTMLParser):
     #class to extract urls for lightcurves, so we can then scrap them
+    global url_list
     def handle_starttag(self, tag, attrs):
         lc = "Lightcurve"
         if tag == 'a' and len(attrs) >= 1 and len(attrs[0]) >=2:
@@ -16,7 +16,19 @@ class URLHTMLParser(HTMLParser):
                 split_attr = url_attr.split("'")
                 url = split_attr[1]
                 url = url[0:len(url)-1]
-                print(url)
+                url_list.append(url)
 
-parser = URLHTMLParser()
-parser.feed(the_page)
+def save(url_list):
+    with open("data/lc_urls.csv", 'w') as urlFile:
+        print("reached this part")
+        print("gonna wr this: ", url_list)
+        wr = csv.writer(urlFile, lineterminator='\n')
+        for url in url_list:
+            wr.writerow([url])
+
+if __name__ == "__main__":
+    html = urlopen("http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1")
+    the_page = str(html.read())
+    parser = URLHTMLParser()
+    parser.feed(the_page)
+    save(url_list)

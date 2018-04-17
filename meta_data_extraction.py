@@ -18,9 +18,20 @@ class metaDataHTMLParser(HTMLParser):
         data_list_item.append(data)
 
 
-html = urlopen("http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1")
-the_page = str(html.read())
+
+if __name__ == "__main__":
+    html = urlopen("http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1")
+    the_page = str(html.read())
+    parser = meDataHTMLParser()
+    parser.feed(the_page)
+
+    # def get_lc(url):
+    #     html = urlopen(url)
+    #     lc_page = str(html.read())
 
 
-parser = meDataHTMLParser()
-parser.feed(the_page)
+    metaDataFileName = "data/lc_metadata.csv"
+    with open("data/lc_urls.csv", 'wb') as urlFile:
+        wr = csv.writer(metaDataFileName)
+        wr.writerows(data_list)
+ 
