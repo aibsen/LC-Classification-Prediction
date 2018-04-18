@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
 
     metaDataFileName = "data/lc_metadata.csv"
-    with open("data/lc_urls.csv", 'wb') as urlFile:
+    with open(metaDataFileName, 'wb') as urlFile:
         wr = csv.writer(metaDataFileName)
         wr.writerows(data_list)
  

@@ -1,3 +1,5 @@
+#This file goes to the CRTS data page and extracts all the urls of the light curves, so I can then process those.
+
 from urllib.request import urlopen
 from html.parser import HTMLParser
 import csv
