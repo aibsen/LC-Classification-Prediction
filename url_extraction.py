@@ -20,17 +20,22 @@ class URLHTMLParser(HTMLParser):
                 url = url[0:len(url)-1]
                 url_list.append(url)
 
-def save(url_list):
-    with open("data/lc_urls.csv", 'w') as urlFile:
-        print("reached this part")
+def save(url_list, file_name):
+    with open(file_name, 'w') as urlFile:
         print("gonna wr this: ", url_list)
         wr = csv.writer(urlFile, lineterminator='\n')
         for url in url_list:
             wr.writerow([url])
 
 if __name__ == "__main__":
-    html = urlopen("http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1")
-    the_page = str(html.read())
-    parser = URLHTMLParser()
-    parser.feed(the_page)
-    save(url_list)
+    urls = ["http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1",
+            "http://nesssi.cacr.caltech.edu/MLS/Allns.arch.html",
+            "http://nesssi.cacr.caltech.edu/SSS/Allns.html"]
+    for index, url in enumerate(urls):
+        url_list = []
+        html = urlopen(url)
+        the_page = str(html.read())
+        parser = URLHTMLParser()
+        parser.feed(the_page)
+        file_name = "data"+str(index)+"/lc_urls.csv"
+        save(url_list, file_name)

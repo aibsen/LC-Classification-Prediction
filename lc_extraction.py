@@ -2,30 +2,6 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 import csv
 
-# url_list = []
-
-# class URLHTMLParser(HTMLParser):
-#     #class to extract urls for lightcurves, so we can then scrap them
-#     global url_list
-#     def handle_starttag(self, tag, attrs):
-#         lc = "Lightcurve"
-#         if tag == 'a' and len(attrs) >= 1 and len(attrs[0]) >=2:
-#             if attrs[0][1]!= None and lc in attrs[0][1]:
-#                 url_attr = attrs[2][1]
-#                 #parse url
-#                 split_attr = url_attr.split("'")
-#                 url = split_attr[1]
-#                 url = url[0:len(url)-1]
-#                 url_list.append(url)
-
-# def save(url_list):
-#     with open("data/lc_urls.csv", 'w') as urlFile:
-#         print("reached this part")
-#         print("gonna wr this: ", url_list)
-#         wr = csv.writer(urlFile, lineterminator='\n')
-#         for url in url_list:
-#             wr.writerow([url])
-
 lc_list = []
 lc_point_list=[]
 
@@ -61,10 +37,10 @@ def get_page_content(url):
     parser = LCHTMLParser()
     parser.feed(the_page)
 
-def save_lc(url,lc_point_list):
+def save_lc(url,lc_point_list, index):
     #get name for file, which will be the id -last bit- of the url
     name = url.split("/")
-    name = "data/"+name[len(name)-1].split("p")[0]
+    name = "data"+str(index)+"/"+name[len(name)-1].split("p")[0]
     print("Saving lc to file ", name)
     fieldnames = ["coords","date","mag","error"]
     print(name)
@@ -76,11 +52,13 @@ def save_lc(url,lc_point_list):
     
 
 if __name__ == "__main__":
-    with open("data/lc_urls.csv", newline='\n') as urlFile:
-        reader = csv.reader(urlFile)
-        for row in reader:
-            url = row[0]
-            print("Getting lc from ", url)
-            get_page_content(url)
-            save_lc(url,lc_point_list)
-            lc_point_list=[]
+
+    for index in range(3):
+        with open("data"+str(index)+"/lc_urls.csv", newline='\n') as urlFile:
+            reader = csv.reader(urlFile)
+            for row in reader:
+                url = row[0]
+                print("Getting lc from ", url)
+                get_page_content(url)
+                save_lc(url,lc_point_list, index)
+                lc_point_list=[]
