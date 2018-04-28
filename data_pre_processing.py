@@ -52,5 +52,5 @@ if __name__ == "__main__":
                na_action=None)
 
     #save tagged metadata
-    data.to_csv("tagged_meta_data.csv", sep=',')
+    data.to_csv("data/tagged_meta_data.csv", sep=',')
     
