@@ -1,0 +1,16 @@
+report:              precision    recall  f1-score   support
+
+        0.0       0.73      0.80      0.77      1034
+        1.0       0.33      0.07      0.11       116
+        2.0       0.55      0.44      0.49       407
+        3.0       0.24      0.14      0.18        76
+        4.0       0.76      0.83      0.79       218
+        5.0       0.60      0.68      0.64       969
+        7.0       0.00      0.00      0.00        61
+
+avg / total       0.62      0.65      0.63      2881
+mean_score: 0.6382152007482088
+std: 0.026940723408782803
+time it took to train model: 0.596437931060791
+time it took to predict: 0.028177261352539062
+time it took to cross-validate: 2.3461854457855225

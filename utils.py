@@ -29,3 +29,74 @@ feature_list = ["amplitude",
 
 feature_nans = ['eta_e', 'stetsonK', 'maxSlope']
 clean_feature_list = [x for x in feature_list if x not in feature_nans]
+
+feature_list1 = ['amplitude','beyond1Std',"medianBRP","fluxPercentileRatioMid50",
+    "fluxPercentileRatioMid65","q31","gskew"]
+
+feature_list2 = ['gskew','q31',"medianBRP","medianAbsDev",
+    "percentDifferenceFluxPercentile","fluxPercentileRatioMid50"]
+
+feature_list3 = [
+    "anderson_darling",
+    "rcs",
+    "pairSlopeTrend",
+    "percentAmplitude",
+    "percentDifferenceFluxPercentile",
+    "q31",
+    "gskew",
+    "con",
+    "fluxPercentileRatioMid50"]
+
+
+feature_list4 = ["amplitude",
+    "anderson_darling",
+    "beyond1Std",
+    "mean",
+    "std",
+    "rcs",
+    "mean_variance",
+    "medianAbsDev",
+    "medianBRP",
+    "pairSlopeTrend",
+    "percentAmplitude",
+    "percentDifferenceFluxPercentile",
+    "fluxPercentileRatioMid80"]
+
+feature_list5 = ["amplitude",
+    "anderson_darling",
+    "beyond1Std",
+    "mean",
+    "std",
+    "rcs",
+    "mean_variance",
+    "medianAbsDev",
+    "medianBRP",
+    "pairSlopeTrend",
+    "percentAmplitude",
+    "percentDifferenceFluxPercentile",
+    "smallKurtosis",
+    "maxSlope",
+    "linearTrend",
+    "autocor_length",
+    "fluxPercentileRatioMid20",
+    "fluxPercentileRatioMid35",
+    "fluxPercentileRatioMid50",
+    "fluxPercentileRatioMid65",
+    "fluxPercentileRatioMid80"]
+
+feature_list6 = ["amplitude",
+    "anderson_darling",
+    "rcs",
+    "pairSlopeTrend",
+    "percentAmplitude",
+    "percentDifferenceFluxPercentile",
+    "q31",
+    "gskew",
+    "smallKurtosis",
+    "meanVariance",
+    "maxSlope",
+    "con",
+    "fluxPercentileRatioMid35",
+    "fluxPercentileRatioMid50",
+    "fluxPercentileRatioMid65",
+    "fluxPercentileRatioMid80"]

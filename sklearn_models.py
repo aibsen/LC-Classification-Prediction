@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
+import time
 from utils import clean_feature_list
 
 from sklearn.model_selection import train_test_split
@@ -34,24 +35,18 @@ classifier_names = ["Nearest Neighbors", "RBF SVM", "Gaussian Process",
 
 def train_predict(sets, model):
     Xtrain, Xtest, Ytrain, Ytest = sets
-    print("training SVM")
+    trainningT0 = time.time()
     model.fit(Xtrain, Ytrain)
-    print("testing SVM")
+    trainningT1 = time.time()
+    predictingT0 = time.time()
     predicted = model.predict(Xtest)
-    return model, predicted
-
-def train_SVM(sets):
-    model = SVC()
-    Xtrain, Xtest, Ytrain, Ytest = sets
-    print("training SVM")
-    model.fit(Xtrain, Ytrain)
-    print("testing SVM")
-    predicted = model.predict(Xtest)
-    return model, predicted
+    predictingT1 = time.time()
+    dtrainning = trainningT1-trainningT0
+    dpredicting = predictingT1-predictingT0
+    return model, predicted, dtrainning, dpredicting
 
 def load_data():
     filename = "data/clean_tagged_features_unclean.csv"
-    # filename = "data/clean_tagged_features.csv"  
     #reading data from csv
     data = pd.read_csv(filename, sep=",")
     X = data[clean_feature_list]
@@ -69,10 +64,13 @@ def split_datasets(X,Y):
     print("size of test data set:",size_of_test[0])
     return [X_train, X_test, Y_train, Y_test]
 
-def get_model_score(model,predicted, sets, filename):
+def get_model_score(model,predicted, sets, filename, dtrainning, dpredicting):
     print("cross validating")
     Xtrain, Xtest, Ytrain, Ytest = sets
+    validatingT0 = time.time()
     cv_scores = cross_val_score(model, Xtrain, Ytrain, cv=5)
+    validatingT1 = time.time()
+    dvalidate = validatingT1-validatingT0
     with open(filename,"w") as file:
         report = metrics.classification_report(Ytest, predicted)
         mean_score = np.mean(cv_scores)
@@ -83,7 +81,13 @@ def get_model_score(model,predicted, sets, filename):
         file.write("mean_score: ")
         file.write(str(mean_score)+"\n")
         file.write("std: ")
-        file.write(str(std))
+        file.write(str(std)+"\n")
+        file.write("time it took to train model: ")
+        file.write(str(dtrainning)+"\n")
+        file.write("time it took to predict: ")
+        file.write(str(dpredicting)+"\n")
+        file.write("time it took to cross-validate: ")
+        file.write(str(dvalidate)+"\n")
 
 if __name__ == "__main__":
     print("loading data")
@@ -91,7 +95,9 @@ if __name__ == "__main__":
     print("splitting data into trainning and test data sets")
     sets = split_datasets(X,Y)
     print("trainning models")
-    model, predicted = train_SVM(sets)
-    #see how model performed
-    get_model_score(model, predicted, sets, "testnotclean.txt")
-
+    for i, classifier in enumerate(classifiers):
+        print("trainning-testing model ",i,"/8 :",classifier_names[i])
+        model, predicted, tt, tp = train_predict(sets, classifier)
+        #see how model performed
+        print("getting score for model ",i,"/8 :",classifier_names[i])
+        get_model_score(model, predicted, sets, "results/all/"+classifier_names[i]+".txt", tt, tp)
