@@ -69,10 +69,8 @@ if __name__ == "__main__":
             errorsdf = pd.concat([errorsdf, error_row],ignore_index=True)
     
     #save features + errors
-    # featuresdf.to_csv("data/tagged_features.csv", sep=',')
-    # errorsdf.to_csv("data/errors_processing_features.csv", sep=",")
-    featuresdf.to_csv("data/tagged_features_unclean.csv", sep=',')
-    errorsdf.to_csv("data/errors_processing_features_unclean.csv", sep=",")
+    featuresdf.to_csv("data/tagged_features.csv", sep=',')
+    errorsdf.to_csv("data/errors_processing_features.csv", sep=",")
     
     
 
