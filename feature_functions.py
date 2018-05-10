@@ -1,9 +1,11 @@
 import time
 import math
+import lomb
 import numpy as np
 import pandas as pd
 from scipy import stats
 from statsmodels.tsa import stattools
+# import feature_utils
 
 
 def amplitude(data):
@@ -260,3 +262,4 @@ def fluxPercentileRatioMid80(data):
     F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
     F_mid80 = F_10_90 / F_5_95
     return F_mid80
+

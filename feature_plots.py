@@ -1,32 +1,35 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from utils import clean_feature_list
+import sys
 
-filename = "data/clean_tagged_features.csv"
-tagged_features = pd.read_csv(filename, sep=",")
-# X = tagged_features[clean_feature_list]
-# X=X.replace([np.inf, -np.inf], np.nan)
-# where_are_nans = X.isnull()
-# sum_nans = where_are_nans.sum()
-# feature_nans = list(sum_nans[sum_nans[clean_feature_list]>0].keys())
-# arbitrary = 10
-# for fnan in feature_nans:
-#     ids_nan = list(where_are_nans[where_are_nans[fnan]==True].index)      
-#     try:
-#         if len(ids_nan) > arbitrary:
-#             tagged_features = tagged_features.drop([fnan],axis=1)
-#         else:
-#             tagged_features = tagged_features.drop(ids_nan)
-#     except Exception as e:
-#         print('error: ',str(e))
-#         print('probably trying to drop value that has already been dropped')
+#plots for all classes
+def plot_all_classes(tagged_features, outputFile):
+    fplot = sns.pairplot(tagged_features, hue="tag", vars=clean_feature_list, dropna=True)
+    fplot.savefig(outputFile+".png")
 
-# #remove classes Unknown/Other (6 and 8)
-# tagged_features = tagged_features[(tagged_features['tag']!=6) & (tagged_features['tag']!=8)]
+#plots for each pair of classes
+def plot_pairs_of_classes(tagged_features, outputFile):
+    tags = [0,1,2,3,4,5,7]
+    for i in tags:
+        for j in tags:
+            if j > i:
+                items = tagged_features[(tagged_features.tag==i) | (tagged_features.tag ==j)]
+                fplot = sns.pairplot(items, hue="tag", vars=clean_feature_list, dropna=True)
+                fplot.savefig(outputFile+"_"+str(i)+"_"+str(j)+".png")
 
+if __name__ == "__main__":
+    inputFile = "data/clean_tagged_features.csv"
+    outputFile = "results/feature_plots/feature_plots"
 
-sns.pairplot(tagged_features, hue="tag", vars=clean_feature_list[0:5], dropna=True)
-plt.show()
+    if len(sys.argv)>1:
+        inputFile = "data/"+sys.argv[1]+".csv"
+    if len(sys.argv)>2:
+        outputFile = "results/feature_plots/"+sys.argv[2]
 
+    tagged_features = pd.read_csv(inputFile, sep=",")
+
+    plot_all_classes(tagged_features, outputFile)
+    plot_pairs_of_classes(tagged_features, outputFile)

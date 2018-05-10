@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import numpy as np
 from utils import feature_list
+import sys
 
 def remove_nan_inf(X, tagged_features):
     X=X.replace([np.inf, -np.inf], np.nan)
@@ -27,9 +28,16 @@ def remove_unkown_others(tagged_features):
     return tagged_features
 
 if __name__ == "__main__":
-    filename = "data/tagged_features.csv"
-    tagged_features = pd.read_csv(filename, sep=",")
+    output = "data/clean_tagged_features.csv"
+    inputFile = "data/tagged_features.csv"
+
+    if len(sys.argv)>1:
+        inputFile = "data/"+sys.argv[1]+".csv"
+    if len(sys.argv)>2:
+        output = "data/"+sys.argv[2]+".csv"
+  
+    tagged_features = pd.read_csv(inputFile, sep=",")
     X = tagged_features[feature_list]
     tagged_features = remove_nan_inf(X, tagged_features)
     tagged_features = remove_unkown_others(tagged_features)    
-    tagged_features.to_csv("data/clean_tagged_features.csv", sep=',')
+    tagged_features.to_csv(output, sep=',')

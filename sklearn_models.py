@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 import time
+import sys
 from utils import clean_feature_list
 
 from sklearn.model_selection import train_test_split
@@ -45,8 +46,7 @@ def train_predict(sets, model):
     dpredicting = predictingT1-predictingT0
     return model, predicted, dtrainning, dpredicting
 
-def load_data():
-    filename = "data/clean_tagged_features_unclean.csv"
+def load_data(filename):
     #reading data from csv
     data = pd.read_csv(filename, sep=",")
     X = data[clean_feature_list]
@@ -91,7 +91,15 @@ def get_model_score(model,predicted, sets, filename, dtrainning, dpredicting):
 
 if __name__ == "__main__":
     print("loading data")
-    X, Y = load_data()
+    inputFile = "data/clean_tagged_features.csv"
+    resultsDir = "results/all/"
+
+    if len(sys.argv)>1:
+        inputFile = "data/"+sys.argv[1]+".csv"
+    if len(sys.argv)>2:
+        resultsDir = "results/"+sys.argv[2]+"/"
+    
+    X, Y = load_data(inputFile)
     print("splitting data into trainning and test data sets")
     sets = split_datasets(X,Y)
     print("trainning models")
@@ -100,4 +108,4 @@ if __name__ == "__main__":
         model, predicted, tt, tp = train_predict(sets, classifier)
         #see how model performed
         print("getting score for model ",i,"/8 :",classifier_names[i])
-        get_model_score(model, predicted, sets, "results/all/"+classifier_names[i]+".txt", tt, tp)
+        get_model_score(model, predicted, sets, resultsDir+classifier_names[i]+".txt", tt, tp)

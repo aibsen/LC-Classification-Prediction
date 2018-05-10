@@ -1,7 +1,7 @@
 import csv
 import pandas as pd
 import numpy as np
-
+import sys
 
 def load_data():
     fieldnames = ['ID', 'RA (J2000)', 'Dec (J2000)', 'UT Date', 'Mag', 'images', 'SDSS', 'Others', 'Followed', 'Last', 'LC', 'FC', 'Classification','SubClassification']
@@ -54,11 +54,24 @@ def tags_to_numbers(data, tags):
 
 if __name__ == "__main__":
     #load data
+    output = "data/tagged_meta_data.csv"
+    classes_considered = "all"
+    if len(sys.argv)>1:
+        output = "data/"+sys.argv[1]+".csv"
+    if len(sys.argv)>2:
+        classes_considered = sys.argv[2]
+    
     data = load_data()
     data, tags = add_tags(data)
-    data = consider_1st_class(data, tags)
-    data = ignore_question_marks(data, tags) 
+
+    if classes_considered =="all":
+        data = consider_1st_class(data, tags)
+        data = ignore_question_marks(data, tags) 
+
+    elif classes_considered == "main":
+        data = data[data['tag']!= 'Other']
+
     data, tags = tags_to_numbers(data,tags)
     #save tagged metadata
-    data.to_csv("data/tagged_meta_data.csv", sep=',')
+    data.to_csv(output, sep=',')
     

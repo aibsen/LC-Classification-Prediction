@@ -4,6 +4,7 @@ import csv
 import importlib
 import feature_functions as f
 from utils import feature_list
+import sys
 
 function_list = [getattr(f, x) for x in feature_list]
 featuresdf = pd.DataFrame(columns=feature_list)
@@ -42,9 +43,20 @@ def clean(mag,time,error):
 
 if __name__ == "__main__":
 
+    output = "data/tagged_features.csv"
+    eoutput = "data/errors_processing_features.csv"
+    inputFile = "data/tagged_meta_data.csv"
+
+    if len(sys.argv)>1:
+        inputFile = "data/"+sys.argv[1]+".csv"
+    if len(sys.argv)>2:
+        output = "data/"+sys.argv[2]+".csv"
+    if len(sys.argv)>3:
+        eoutput = "data/"+sys.argv[3]+".csv"
+    
     fieldnames =  ["ID","RA (J2000)","Dec (J2000)","UT Date","Mag","images","SDSS",
         "Others","Followed","Last","LC","FC","Classification","SubClassification","Survey","tag"]
-    tagged_metadata = pd.read_csv("data/tagged_meta_data.csv", sep=",", names=fieldnames, skiprows=1)
+    tagged_metadata = pd.read_csv(inputFile, sep=",", names=fieldnames, skiprows=1)
     for index, row in tagged_metadata.iterrows():
         filename = ""
         tag = row['tag']
@@ -69,8 +81,8 @@ if __name__ == "__main__":
             errorsdf = pd.concat([errorsdf, error_row],ignore_index=True)
     
     #save features + errors
-    featuresdf.to_csv("data/tagged_features.csv", sep=',')
-    errorsdf.to_csv("data/errors_processing_features.csv", sep=",")
+    featuresdf.to_csv(output, sep=',')
+    errorsdf.to_csv(eoutput, sep=",")
     
     
 
