@@ -1,6 +1,5 @@
 import time
 import math
-import lomb
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -73,10 +72,6 @@ def stetsonK(data):
     K = (1 / np.sqrt(N * 1.0) *
             np.sum(np.abs(sigmap)) / np.sqrt(np.sum(sigmap ** 2)))
     return K
-
-def mean_variance(data):
-    magnitude = data[0]
-    return np.std(magnitude) / np.mean(magnitude)
 
 def medianAbsDev(data):
     magnitude = data[0]

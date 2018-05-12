@@ -4,6 +4,13 @@ import pickle
 import time
 import sys
 from utils import clean_feature_list
+from utils import gus
+from utils import gusm
+from utils import gus2
+from utils import vt80
+from utils import skb
+from utils import skbm
+from utils import sp25
 
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
@@ -13,7 +20,7 @@ from sklearn.externals import joblib
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from sklearn.gaussian_process import GaussianProcessClassifier
+# from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -22,7 +29,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 classifiers = [
     KNeighborsClassifier(),
     SVC(),
-    GaussianProcessClassifier(),
+    # GaussianProcessClassifier(),
     DecisionTreeClassifier(),
     RandomForestClassifier(),
     MLPClassifier(),
@@ -30,9 +37,13 @@ classifiers = [
     GaussianNB(),
     QuadraticDiscriminantAnalysis()]
 
-classifier_names = ["Nearest Neighbors", "RBF SVM", "Gaussian Process",
+classifier_names = ["Nearest Neighbors", "RBF SVM", 
+# "Gaussian Process",
          "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
          "Naive Bayes", "QDA"]
+
+flists=[clean_feature_list, gus, gusm, gus2, vt80, skb, skbm, sp25]
+flists_names=["clean_feature_list", "gus", "gusm", "gus2", "vt80", "skb", "skbm", "sp25"]
 
 def train_predict(sets, model):
     Xtrain, Xtest, Ytrain, Ytest = sets
@@ -46,10 +57,10 @@ def train_predict(sets, model):
     dpredicting = predictingT1-predictingT0
     return model, predicted, dtrainning, dpredicting
 
-def load_data(filename):
+def load_data(filename,flist):
     #reading data from csv
     data = pd.read_csv(filename, sep=",")
-    X = data[clean_feature_list]
+    X = data[flist]
     Y = data["tag"] 
     return X,Y
 
@@ -90,22 +101,37 @@ def get_model_score(model,predicted, sets, filename, dtrainning, dpredicting):
         file.write(str(dvalidate)+"\n")
 
 if __name__ == "__main__":
+    # print("loading data")
+    # inputFile = "data/clean_tagged_features.csv"
+    # resultsDir = "results/all/"
+
+    # if len(sys.argv)>1:
+    #     inputFile = "data/"+sys.argv[1]+".csv"
+    # if len(sys.argv)>2:
+    #     resultsDir = "results/"+sys.argv[2]+"/"
+    
+    # X, Y = load_data(inputFile)
+    # print("splitting data into trainning and test data sets")
+    # sets = split_datasets(X,Y)
+    # print("trainning models")
+    # for i, classifier in enumerate(classifiers):
+    #     print("trainning-testing model ",i,"/8 :",classifier_names[i])
+    #     model, predicted, tt, tp = train_predict(sets, classifier)
+    #     #see how model performed
+    #     print("getting score for model ",i,"/8 :",classifier_names[i])
+    #     get_model_score(model, predicted, sets, resultsDir+classifier_names[i]+".txt", tt, tp)
     print("loading data")
     inputFile = "data/clean_tagged_features.csv"
-    resultsDir = "results/all/"
-
-    if len(sys.argv)>1:
-        inputFile = "data/"+sys.argv[1]+".csv"
-    if len(sys.argv)>2:
-        resultsDir = "results/"+sys.argv[2]+"/"
+    resultsDir = "results/"
     
-    X, Y = load_data(inputFile)
-    print("splitting data into trainning and test data sets")
-    sets = split_datasets(X,Y)
-    print("trainning models")
-    for i, classifier in enumerate(classifiers):
-        print("trainning-testing model ",i,"/8 :",classifier_names[i])
-        model, predicted, tt, tp = train_predict(sets, classifier)
+   
+    for j,flist in enumerate(flists):
+        X, Y = load_data(inputFile, flist)
+        sets = split_datasets(X,Y)
+        print("trainning models")
+        for i, classifier in enumerate(classifiers):
+            print("trainning-testing model ",i,"/8 :",classifier_names[i])
+            model, predicted, tt, tp = train_predict(sets, classifier)
         #see how model performed
-        print("getting score for model ",i,"/8 :",classifier_names[i])
-        get_model_score(model, predicted, sets, resultsDir+classifier_names[i]+".txt", tt, tp)
+            print("getting score for model ",i,"/8 :",classifier_names[i])
+            get_model_score(model, predicted, sets, resultsDir+flists_names[j]+"-all/"+classifier_names[i]+".txt", tt, tp)
