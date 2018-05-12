@@ -4,8 +4,7 @@ import csv
 import importlib
 import feature_functions as f
 from utils import feature_list
-from load_lc import load_lc
-from load_lc import get_file_name
+from load_lc import load_lc, get_file_name, load_tagged_metadata
 import sys
 from os.path import dirname, abspath
 
@@ -47,13 +46,9 @@ if __name__ == "__main__":
         outputname = sys.argv[2]+".csv"
     if len(sys.argv)>3:
         eoutputname = sys.argv[3]+".csv"
-
-    data_dir = dirname(dirname(abspath(__file__)))+"/data/"
-    inputFile = data_dir+inputFilename
-    fieldnames =  ["ID","RA (J2000)","Dec (J2000)","UT Date","Mag","images","SDSS",
-        "Others","Followed","Last","LC","FC","Classification","SubClassification","Survey","tag"]
-    tagged_metadata = pd.read_csv(inputFile, sep=",", names=fieldnames, skiprows=1)
     
+    tagged_metadata = load_tagged_metadata(inputFilename)
+
     for index, row in tagged_metadata.iterrows():
         filename, objid = get_file_name(row)
         lc = load_lc(filename)
@@ -68,8 +63,9 @@ if __name__ == "__main__":
             error_row = pd.DataFrame(data=error)
             errorsdf = pd.concat([errorsdf, error_row],ignore_index=True)
     #save features + errors
-    featuresdf.to_csv(output, sep=',')
-    errorsdf.to_csv(eoutput, sep=",")
+    data_dir = dirname(dirname(abspath(__file__)))+"/data/"
+    featuresdf.to_csv(data_dir+outputname, sep=',')
+    errorsdf.to_csv(data_dir+eoutputname, sep=",")
     
     
 

@@ -1,4 +1,4 @@
-feature_list = ["amplitude",
+bfeature_list = ["amplitude",
     "anderson_darling",
     "beyond1Std",
     "eta_e",
