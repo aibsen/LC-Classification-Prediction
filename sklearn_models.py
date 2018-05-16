@@ -4,14 +4,8 @@ import pickle
 import time
 import sys
 from utils import clean_feature_list
-from utils import gus
-from utils import gusm
-from utils import gus2
-from utils import vt80
-from utils import skb
-from utils import skbm
-from utils import sp25
 
+from utils import gus2, vt80, skb, skbm, sp25, ranked ,dmdtnames, clean_feature_list
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
@@ -42,8 +36,8 @@ classifier_names = ["Nearest Neighbors", "RBF SVM",
          "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
          "Naive Bayes", "QDA"]
 
-flists=[clean_feature_list, gus, gusm, gus2, vt80, skb, skbm, sp25]
-flists_names=["clean_feature_list", "gus", "gusm", "gus2", "vt80", "skb", "skbm", "sp25"]
+flists=[clean_feature_list, ranked, gus2, vt80, skb, skbm, sp25]
+flists_names=["all-features","ranked", "gus2", "vt80", "skb", "skbm", "sp25"]
 
 def train_predict(sets, model):
     Xtrain, Xtest, Ytrain, Ytest = sets
@@ -101,37 +95,59 @@ def get_model_score(model,predicted, sets, filename, dtrainning, dpredicting):
         file.write(str(dvalidate)+"\n")
 
 if __name__ == "__main__":
-    # print("loading data")
-    # inputFile = "data/clean_tagged_features.csv"
-    # resultsDir = "results/all/"
+    # this bit is for one flist. have to refactor
+    print("loading data")
+    inputFile = "data/pys/all-classes/clean_tagged_features.csv"
+    resultsDir = "results/all/"
 
-    # if len(sys.argv)>1:
-    #     inputFile = "data/"+sys.argv[1]+".csv"
-    # if len(sys.argv)>2:
-    #     resultsDir = "results/"+sys.argv[2]+"/"
+    if len(sys.argv)>1:
+        inputFile = "data/"+sys.argv[1]+".csv"
+    if len(sys.argv)>2:
+        resultsDir = "results/"+sys.argv[2]+"/"
     
     # X, Y = load_data(inputFile)
-    # print("splitting data into trainning and test data sets")
-    # sets = split_datasets(X,Y)
-    # print("trainning models")
-    # for i, classifier in enumerate(classifiers):
-    #     print("trainning-testing model ",i,"/8 :",classifier_names[i])
-    #     model, predicted, tt, tp = train_predict(sets, classifier)
-    #     #see how model performed
-    #     print("getting score for model ",i,"/8 :",classifier_names[i])
-    #     get_model_score(model, predicted, sets, resultsDir+classifier_names[i]+".txt", tt, tp)
-    print("loading data")
-    inputFile = "data/clean_tagged_features.csv"
-    resultsDir = "results/"
-    
-   
-    for j,flist in enumerate(flists):
-        X, Y = load_data(inputFile, flist)
-        sets = split_datasets(X,Y)
-        print("trainning models")
-        for i, classifier in enumerate(classifiers):
-            print("trainning-testing model ",i,"/8 :",classifier_names[i])
-            model, predicted, tt, tp = train_predict(sets, classifier)
+    X, Y = load_data(inputFile, dmdtnames)
+    # X, Y = load_data(inputFile, clean_feature_list)
+    print("splitting data into trainning and test data sets")
+    sets = split_datasets(X,Y)
+    print("trainning models")
+    for i, classifier in enumerate(classifiers):
+        print("trainning-testing model ",i,"/8 :",classifier_names[i])
+        model, predicted, tt, tp = train_predict(sets, classifier)
         #see how model performed
-            print("getting score for model ",i,"/8 :",classifier_names[i])
-            get_model_score(model, predicted, sets, resultsDir+flists_names[j]+"-all/"+classifier_names[i]+".txt", tt, tp)
+        print("getting score for model ",i,"/8 :",classifier_names[i])
+        get_model_score(model, predicted, sets, resultsDir+classifier_names[i]+".txt", tt, tp)
+   
+   
+   
+    # # this bit is for iterating over feature lists. I have to refactor.
+    # print("loading data")
+    # inputFile = "data/standard-features/main-classes/clean_tagged_features.csv"
+    # resultsDir = "results/main-classes/"
+    
+    # for j,flist in enumerate(flists):
+    #     X, Y = load_data(inputFile, flist)
+    #     sets = split_datasets(X,Y)
+    #     print("trainning models")
+    #     for i, classifier in enumerate(classifiers):
+    #         print("trainning-testing model ",i,"/8 :",classifier_names[i])
+    #         model, predicted, tt, tp = train_predict(sets, classifier)
+    #     #see how model performed
+    #         print("getting score for model ",i,"/8 :",classifier_names[i])
+    #         get_model_score(model, predicted, sets, resultsDir+flists_names[j]+"/"+classifier_names[i]+".txt", tt, tp)
+
+    # this bit is for iterating over pca features. I have to refactor.
+    # print("loading data")
+    # inputDir = "data/pca/main-classes/"
+    # resultsDir = "results/main-classes/"
+    
+    # for n in [5,10,15]:
+    #     X, Y = load_data(inputDir+"pca"+str(n)+".csv", [str(item) for item in list(range(n))])
+    #     sets = split_datasets(X,Y)
+    #     print("trainning models")
+    #     for i, classifier in enumerate(classifiers):
+    #         print("trainning-testing model ",i,"/8 :",classifier_names[i])
+    #         model, predicted, tt, tp = train_predict(sets, classifier)
+    #     #see how model performed
+    #         print("getting score for model ",i,"/8 :",classifier_names[i])
+    #         get_model_score(model, predicted, sets, resultsDir+"pca"+str(n)+"/"+classifier_names[i]+".txt", tt, tp)

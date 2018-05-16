@@ -4,15 +4,16 @@ import seaborn as sns
 # import matplotlib.pyplot as plt
 from utils import clean_feature_list
 import sys
+from utils import ranked
 
 #plots for all classes
 def plot_all_classes(tagged_features, outputFile):
-    fplot = sns.pairplot(tagged_features, hue="tag", vars=clean_feature_list, dropna=True)
+    fplot = sns.pairplot(tagged_features, hue="tag", vars=ranked, dropna=True)
     fplot.savefig(outputFile+".png")
 
 #plots for each pair of classes
 def plot_pairs_of_classes(tagged_features, outputFile):
-    tags = [0,1,2,3,4,5,7]
+    tags = [0,1,2,3,5,7]
     for i in tags:
         for j in tags:
             if j > i:
@@ -27,9 +28,9 @@ if __name__ == "__main__":
     if len(sys.argv)>1:
         inputFile = "data/"+sys.argv[1]+".csv"
     if len(sys.argv)>2:
-        outputFile = "results/feature_plots/"+sys.argv[2]
+        outputFile = "results/"+sys.argv[2]
 
     tagged_features = pd.read_csv(inputFile, sep=",")
 
     plot_all_classes(tagged_features, outputFile)
-    plot_pairs_of_classes(tagged_features, outputFile)
+    # plot_pairs_of_classes(tagged_features, outputFile)

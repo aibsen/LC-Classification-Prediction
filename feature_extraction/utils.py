@@ -116,3 +116,12 @@ gus = ['meanVariance']
 gusm=['gskew']
 #both above
 gus2 = ['meanVariance', "gskew"]
+
+
+dmranges = [0, 0.1, 0.2, 0.3, 0.5, 1, 1.5, 2, 2.5, 3, 5, 8]
+dtranges = [1/145, 2/145, 3/145, 4/145, 1/25, 2/25, 3/25, 1.5, 2.5, 3.5,4.5,
+    5.5,7,10,20,30,60,90,120,240,600,960,2000,4000]
+dmrnames = ["dm-"+str(x) for x in range(len(dmranges)-1)]
+dtrnames = ["dt-"+str(x) for x in range(len(dtranges)-1)]
+dmdtnames = dmrnames+dtrnames
+fnames = ["id"]+dmrnames+dtrnames+["tag"]
