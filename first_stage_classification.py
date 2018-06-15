@@ -3,9 +3,9 @@ import pandas as pd
 import pickle
 import time
 import sys
-from utils import clean_feature_list
 
-from utils import gus2, vt80, skb, skbm, sp25, ranked ,dmdtnames, clean_feature_list
+from pipeline_utils import clean_feature_list
+
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
@@ -14,7 +14,6 @@ from sklearn.externals import joblib
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-# from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -23,21 +22,17 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 classifiers = [
     KNeighborsClassifier(),
     SVC(),
-    # GaussianProcessClassifier(),
     DecisionTreeClassifier(),
     RandomForestClassifier(),
     MLPClassifier(),
     AdaBoostClassifier(),
     GaussianNB(),
-    QuadraticDiscriminantAnalysis()]
+    ]
 
 classifier_names = ["Nearest Neighbors", "RBF SVM", 
-# "Gaussian Process",
          "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
-         "Naive Bayes", "QDA"]
+         "Naive Bayes"]
 
-flists=[clean_feature_list, ranked, gus2, vt80, skb, skbm, sp25]
-flists_names=["all-features","ranked", "gus2", "vt80", "skb", "skbm", "sp25"]
 
 def train_predict(sets, model):
     Xtrain, Xtest, Ytrain, Ytest = sets
@@ -51,11 +46,11 @@ def train_predict(sets, model):
     dpredicting = predictingT1-predictingT0
     return model, predicted, dtrainning, dpredicting
 
-def load_data(filename,flist):
-    #reading data from csv
-    data = pd.read_csv(filename, sep=",")
-    X = data[flist]
-    Y = data["tag"] 
+def load_data(filename):
+    #reading data from pkl
+    data = pd.read_pickle(filename)
+    X = data[clean_feature_list]
+    Y = data["Type"] 
     return X,Y
 
 def split_datasets(X,Y):
@@ -69,19 +64,19 @@ def split_datasets(X,Y):
     print("size of test data set:",size_of_test[0])
     return [X_train, X_test, Y_train, Y_test]
 
-def get_model_score(model,predicted, sets, filename, dtrainning, dpredicting):
+def get_model_score(name,model,predicted, sets, filename, dtrainning, dpredicting):
     print("cross validating")
     Xtrain, Xtest, Ytrain, Ytest = sets
     validatingT0 = time.time()
     cv_scores = cross_val_score(model, Xtrain, Ytrain, cv=5)
     validatingT1 = time.time()
     dvalidate = validatingT1-validatingT0
-    with open(filename,"w") as file:
+    with open(filename,"a") as file:
         report = metrics.classification_report(Ytest, predicted)
         mean_score = np.mean(cv_scores)
         std = np.std(cv_scores)
         score = model.score(Xtest, Ytest)
-        file.write("report: ")
+        file.write("report for "+name+" : ")
         file.write(report)
         file.write("mean_score: ")
         file.write(str(mean_score)+"\n")
@@ -93,30 +88,19 @@ def get_model_score(model,predicted, sets, filename, dtrainning, dpredicting):
         file.write(str(dpredicting)+"\n")
         file.write("time it took to cross-validate: ")
         file.write(str(dvalidate)+"\n")
+        file.write("\n")
+        file.write("\n")
 
-if __name__ == "__main__":
-    # this bit is for one flist. have to refactor
-    print("loading data")
-    inputFile = "data/pys/all-classes/clean_tagged_features.csv"
-    resultsDir = "results/all/"
-
-    if len(sys.argv)>1:
-        inputFile = "data/"+sys.argv[1]+".csv"
-    if len(sys.argv)>2:
-        resultsDir = "results/"+sys.argv[2]+"/"
-    
-    # X, Y = load_data(inputFile)
-    X, Y = load_data(inputFile, dmdtnames)
-    # X, Y = load_data(inputFile, clean_feature_list)
-    print("splitting data into trainning and test data sets")
+def first_stage_classification(inputFile, outputFile):
+    X, Y = load_data(inputFile)
     sets = split_datasets(X,Y)
     print("trainning models")
     for i, classifier in enumerate(classifiers):
-        print("trainning-testing model ",i,"/8 :",classifier_names[i])
+        print("trainning-testing model ",i," :",classifier_names[i])
         model, predicted, tt, tp = train_predict(sets, classifier)
         #see how model performed
-        print("getting score for model ",i,"/8 :",classifier_names[i])
-        get_model_score(model, predicted, sets, resultsDir+classifier_names[i]+".txt", tt, tp)
+        print("getting score for model ",i," :",classifier_names[i])
+        get_model_score(classifier_names[i],model, predicted, sets,outputFile, tt, tp)
    
    
    

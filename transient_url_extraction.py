@@ -1,5 +1,5 @@
 #This file goes to the CRTS data page and extracts all the urls of the light curves, so I can then process those.
-
+from pipeline_utils import crts_url_list
 from urllib.request import urlopen
 from html.parser import HTMLParser
 import csv
@@ -27,15 +27,11 @@ def save(url_list, file_name):
         for url in url_list:
             wr.writerow([url])
 
-if __name__ == "__main__":
-    urls = ["http://nesssi.cacr.caltech.edu/catalina/Allns.arch.html#table1",
-            "http://nesssi.cacr.caltech.edu/MLS/Allns.arch.html",
-            "http://nesssi.cacr.caltech.edu/SSS/Allns.html"]
+def transient_url_extraction():
+    urls = crts_url_list
     for index, url in enumerate(urls):
-        url_list = []
         html = urlopen(url)
         the_page = str(html.read())
         parser = URLHTMLParser()
         parser.feed(the_page)
-        file_name = "data"+str(index)+"/lc_urls.csv"
-        save(url_list, file_name)
+    return url_list
