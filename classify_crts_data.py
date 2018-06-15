@@ -140,5 +140,29 @@ class SecondStageClassificationDMDT(luigi.Task):
         inputFile = data_dir+"features/dmdt_mappings/tagged_features"
         second_stage_classificationDMDT(inputFile, outputFile)
 
+class ClassifyCRTSData(luigi.Task):
+    def requires(self):
+        return [FatsFeaturesPreprocessing(), DMDTMappings()]
+    def output(self):
+        return luigi.LocalTarget(data_dir+"resuts/")
+    def run(self):
+        outputFile = data_dir+"results/fats_features/first_stage_scores.txt"
+        inputFile = data_dir+"features/fats_features/clean_tagged_features.pkl"
+        first_stage_classification(inputFile, outputFile)
+        outputFile = data_dir+"results/fats_features/second_stage_scores.txt"
+        inputFile = data_dir+"features/fats_features/clean_tagged_features.pkl"
+        second_stage_classification(inputFile, outputFile)
+        outputFile = data_dir+"results/dmdt_mappings/first_stage_scores.txt"
+        inputFile = data_dir+"features/dmdt_mappings/tagged_features"
+        first_stage_classificationDMDT(inputFile, outputFile)
+        outputFile = data_dir+"results/dmdt_mappings/second_stage_scores.txt"
+        inputFile = data_dir+"features/dmdt_mappings/tagged_features"
+        second_stage_classificationDMDT(inputFile, outputFile)
+
+
+
+
+        
+
 if __name__ == '__main__':
     luigi.run()
